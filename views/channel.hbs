@@ -1,42 +1,123 @@
 <script>
+$(function() {
+
+  $.getJSON('/o/{{channel}}', function (res) {
+    for (var i = 0; i < res.length; i++) {
+      try {
+        var data = JSON.parse(res[i]);
+        $('#content').append('<blockquote>' + data.msg + '<cite>' + data.user + ' @ ' + moment.unix(parseInt(data.timestamp)).format('MMM Do, HH:mm:ss') + '</cite></blockquote>');
+      } catch (e) {
+        console.log(e);
+      }
+    }
+  });
+
+  // Sever-sent events
   var source = new EventSource('/s/{{channel}}');
-  source.addEventListener('message', function(e) {
-    $('ul').prepend('<li>' + e.data + '</li>');
+
+  source.addEventListener('open', function(e) {
+    console.log("open");
+    $.globalMessenger().post("Connected to #{{channel}}");
   }, false);
+
+  source.addEventListener('error', function(e) {
+    if (e.readyState == EventSource.CLOSED) {
+      $.globalMessenger().post({
+        message: 'Connection to server lost.',
+        type: 'error'
+      });
+    }
+  }, false);
+
+  source.addEventListener('message', function(e) {
+    console.log(e);
+    try {
+      var data = JSON.parse(e.data);
+      // $('ul').prepend('<li>' + data.user + ' ' + data.msg + '</li>');
+      $('#content').prepend('<blockquote>' + data.msg + '<cite>' + data.user + ' @ ' + moment.unix(parseInt(data.timestamp)).format('MMM Do, HH:mm:ss') + '</cite></blockquote>');
+
+    } catch (e) {
+      console.log(e);
+    }
+  }, false);
+
+  // Message
+  var lastSent;
 
   var send = function () {
     if ($('#message').val() != "") {
-      $.post('/p/{{channel}}', {data: $('#message').val()}, function(response) {
-        // console.log(response);
+      lastSent = $('#message').val();
+
+      $.post('/p/{{channel}}', {user: localStorage.getItem('name'), msg: $('#message').val(), timestamp: Math.round(new Date().getTime()/1000.0) }, function(res) {
+        // console.log(res);
       });
+
       $('#message').val("");
     }
+  };
+
+  $('#message').keyup(function (e) {
+    e.preventDefault();
+    if (e.which == 13) {
+      send();
+    } else if (e.which == 38) {
+      $('#message').val(lastSent);
+    }
+  });
+
+
+  $('#buttonSendMsg').click(function (e) {
+    send();
+  });
+
+
+  // Name
+  var setName = function () {
+    $.globalMessenger().post("Name changed to " + $('#name').val());
+    console.log("name set to " + $('#name').val());
+    localStorage.setItem('name', $('#name').val());
   }
 
-  $(function() {
-    $('#message').keyup(function (e) {
-      e.preventDefault();
-      if (e.which == 13) {
-        send();
-      }
-    });
+  $('#name').keyup(function (e) {
+    e.preventDefault();
+    if (e.which == 13) {
+      setName();
+    }
   });
+
+  $('#buttonSetName').click(function (e) {
+    setName();
+  });
+
+  $('#name').val(localStorage.getItem('name'));
+});
+
+
 </script>
 
 <section class="row">
   <div class="large-6 columns">
-    <h3 class="subheader">Hello @ {{channel}}</h3>
+    <h3 class="subheader">Hello</h3>
+    <h5 class="subheader">#{{channel}}</h5>
+    <div class="row collapse">
+      <div class="small-10 columns">
+        <input id="name" type="text" placeholder="Enter your Name">
+      </div>
+      <div class="small-2 columns">
+        <a id="buttonSetName" class="button prefix success">Set</a>
+      </div>
+    </div>
   </div>
 </section>
-
 <section class="row">
   <div class="large-6 columns">
+
     <div class="row collapse">
       <div class="small-10 columns">
         <input id="message" type="text" placeholder="">
       </div>
       <div class="small-2 columns">
-        <a class="button prefix" onclick="send()">Send</a>
+        <a id="buttonSendMsg" class="button prefix">Send</a>
       </div>
     </div>
   </div>
@@ -45,7 +126,7 @@
 
 <section class="row">
   <div class="large-6 columns">
-    <ul></ul>
+    <div id="content"></div>
   </div>
 </section>
 

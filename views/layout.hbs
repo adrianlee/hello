@@ -9,12 +9,26 @@
 
     <title>Hello World</title>
     <!-- Foundation -->
-    <link rel="stylesheet" href="/foundation.min.css">
-    <link rel='stylesheet' href='/style.css'>
-
-    <script src="/vendor/zepto.js"></script>
+    <link rel="stylesheet" href="/css/foundation.min.css">
+    <link rel='stylesheet' href='/css/messenger.css'>
+    <link rel='stylesheet' href='/css/messenger-spinner.css'>
+    <link rel='stylesheet' href='/css/messenger-theme-air.css'>
+    <link rel='stylesheet' href='/css/style.css'>
 
     {{{block "stylesheets"}}}
+
+    <script src="/vendor/moment.js"></script>
+    <script src="/vendor/jquery.js"></script>
+    <script src="/vendor/underscore.min.js"></script>
+    <script src="/vendor/backbone.min.js"></script>
+    <script src="/vendor/messenger.js"></script>
+    <script>
+    $(function() {
+        $._messengerDefaults = {
+            extraClasses: 'messenger-fixed messenger-theme-air messenger-on-top messenger-on-right'
+        }
+    });
+    </script>
   </head>
 
   <body>

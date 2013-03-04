@@ -60,6 +60,13 @@ app.get('/c/:channel', function (req, res) {
   res.render('channel');
 });
 
+app.get('/o/:channel', function (req, res) {
+  pubClient.lrange(req.param('channel'), 0, -1, function (err, reply) {
+    console.log(reply);
+    res.json(reply);
+  });
+});
+
 app.get('/s/:channel', function (req, res) {
   req.socket.setTimeout(Infinity);
 
@@ -101,11 +108,13 @@ app.get('/s/:channel', function (req, res) {
 });
 
 app.post('/p/:channel', function(req, res) {
-  req.param('data');
-  req.param(req.body);
-  pubClient.publish(req.param('channel'), req.param('data'));
+  pubClient.lpush(req.param('channel'), JSON.stringify(req.body))
+  pubClient.ltrim(req.param('channel'), 0, 9);
+
+  console.log(req.body);
+
+  pubClient.publish(req.param('channel'), JSON.stringify(req.body));
   res.writeHead(200, {'Content-Type': 'text/html'});
-  res.write('OK');
   res.end();
 });
 
