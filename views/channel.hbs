@@ -23,13 +23,17 @@ $(function() {
   source.addEventListener('error', function(e) {
     if (e.readyState == EventSource.CLOSED) {
       $.globalMessenger().post({
-        message: 'Connection to server lost.',
+        message: 'Connection to server lost',
         type: 'error'
       });
     }
   }, false);
 
   source.addEventListener('message', function(e) {
+    // if (e.origin != 'http://example.com') {
+    //   alert('Origin was not http://example.com');
+    //   return;
+    // }
     console.log(e);
     try {
       var data = JSON.parse(e.data);
@@ -97,7 +101,7 @@ $(function() {
 
 <section class="row">
   <div class="large-6 columns">
-    <h3 class="subheader">Hello</h3>
+    <h3 class="subheader"><a href="/">Hello</a></h3>
     <h5 class="subheader">#{{channel}}</h5>
     <div class="row collapse">
       <div class="small-10 columns">
