@@ -1,0 +1,21 @@
+#name {
+  border: none;
+  outline: none;
+  box-shadow: none;
+  background: rgba(200, 200, 200, 0.3);
+}
+
+#message {
+  border: none;
+  outline: none;
+  box-shadow: none;
+  background: rgba(200, 200, 200, 0.3);
+  font-family: 'Helvetica Neue';
+  font-size: 1.2em;
+}
+
+#name:focus,
+#message:focus {
+  background: rgba(200, 200, 200, 0.15);
+}
+

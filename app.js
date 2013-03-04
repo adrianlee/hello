@@ -55,9 +55,10 @@ app.get('/', function(req, res) {
   res.render('index');
 });
 
-app.get('/c/:channel', function (req, res) {
-  res.locals.channel = req.param('channel');
-  res.render('channel');
+app.get('/health', function (req, res) {
+  pubClient.info(function (err, reply) {
+    res.send(reply);
+  });
 });
 
 app.get('/o/:channel', function (req, res) {
@@ -116,6 +117,11 @@ app.post('/p/:channel', function(req, res) {
   pubClient.publish(req.param('channel'), JSON.stringify(req.body));
   res.writeHead(200, {'Content-Type': 'text/html'});
   res.end();
+});
+
+app.get('/:channel', function (req, res) {
+  res.locals.channel = req.param('channel');
+  res.render('channel');
 });
 
 ////////////////////////////////////////////////

@@ -16,7 +16,6 @@ $(function() {
   var source = new EventSource('/s/{{channel}}');
 
   source.addEventListener('open', function(e) {
-    console.log("open");
     $.globalMessenger().post("Connected to #{{channel}}");
   }, false);
 
@@ -70,13 +69,10 @@ $(function() {
   });
 
 
-  $('#buttonSendMsg').click(function (e) {
-    send();
-  });
-
-
   // Name
   var setName = function () {
+    $('#namePrompt').hide();
+    $('#message').show();
     $.globalMessenger().post("Name changed to " + $('#name').val());
     console.log("name set to " + $('#name').val());
     localStorage.setItem('name', $('#name').val());
@@ -89,11 +85,16 @@ $(function() {
     }
   });
 
-  $('#buttonSetName').click(function (e) {
-    setName();
-  });
+  $('#namePrompt').hide();
+  $('#message').hide();
 
-  $('#name').val(localStorage.getItem('name'));
+  if (localStorage.getItem('name')) {
+    $('#name').val(localStorage.getItem('name'));
+    $('#message').show();
+    $('#message').attr("placeholder", localStorage.getItem('name') + " says...");
+  } else {
+    $('#namePrompt').show();
+  }
 });
 
 
@@ -101,27 +102,26 @@ $(function() {
 
 <section class="row">
   <div class="large-6 columns">
-    <h3 class="subheader"><a href="/">Hello</a></h3>
-    <h5 class="subheader">#{{channel}}</h5>
-    <div class="row collapse">
-      <div class="small-10 columns">
-        <input id="name" type="text" placeholder="Enter your Name">
-      </div>
-      <div class="small-2 columns">
-        <a id="buttonSetName" class="button prefix success">Set</a>
-      </div>
-    </div>
+    <h3 class="subheader"><a href="/">Hello</a>, you are in <a href="/{{channel}}">#{{channel}}</a></h3>
   </div>
 </section>
+
+
 <section class="row">
   <div class="large-6 columns">
-
-    <div class="row collapse">
-      <div class="small-10 columns">
-        <input id="message" type="text" placeholder="">
+    <div id="namePrompt">
+      <div class="row collapse">
+        <div class="small-10 columns">
+          <input id="name" type="text" placeholder="my name is">
+        </div>
+        <div class="small-2 columns">
+          <a href="#" class="button prefix success">Set</a>
+        </div>
       </div>
-      <div class="small-2 columns">
-        <a id="buttonSendMsg" class="button prefix">Send</a>
+    </div>
+    <div class="row collapse">
+      <div class="small-12 columns">
+        <input id="message" type="text" placeholder="say something nice" autofocus>
       </div>
     </div>
   </div>
