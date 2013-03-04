@@ -1,0 +1,49 @@
+<script>
+  var source = new EventSource('/s/{{channel}}');
+  source.addEventListener('message', function(e) {
+    $('ul').append('<li>' + e.data + '</li>');
+  }, false);
+
+  var send = function () {
+    $.post('/p/{{channel}}', {data: $('#message').val()}, function(response) {
+      // console.log(response);
+    });
+    $('#message').val("");
+  }
+
+  $(function() {
+    $('#message').keyup(function (e) {
+      e.preventDefault();
+      if (e.which == 13) {
+        send();
+      }
+    });
+  });
+</script>
+
+<section class="row">
+  <div class="large-6 columns">
+    <h3 class="subheader">Hello @ {{channel}}</h3>
+  </div>
+</section>
+
+<section class="row">
+  <div class="large-6 columns">
+    <div class="row collapse">
+      <div class="small-10 columns">
+        <input id="message" type="text" placeholder="">
+      </div>
+      <div class="small-2 columns">
+        <a class="button prefix" onclick="send()">Send</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<section class="row">
+  <div class="large-6 columns">
+    <ul></ul>
+  </div>
+</section>
+

@@ -1,0 +1,15 @@
+{
+  "name": "hello",
+  "version": "0.0.0",
+  "description": "",
+  "main": "app.js",
+  "repository": "",
+  "author": "adrianlee",
+  "license": "MIT",
+  "dependencies": {
+    "redis": "~0.8.2",
+    "hiredis": "~0.1.14",
+    "express": "~3.1.0",
+    "hbs": "~2.0.2"
+  }
+}
