@@ -5,10 +5,12 @@
   }, false);
 
   var send = function () {
-    $.post('/p/{{channel}}', {data: $('#message').val()}, function(response) {
-      // console.log(response);
-    });
-    $('#message').val("");
+    if ($('#message').val() != "") {
+      $.post('/p/{{channel}}', {data: $('#message').val()}, function(response) {
+        // console.log(response);
+      });
+      $('#message').val("");
+    }
   }
 
   $(function() {
