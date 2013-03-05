@@ -5,7 +5,8 @@ $(function() {
     for (var i = 0; i < res.length; i++) {
       try {
         var data = JSON.parse(res[i]);
-        $('#content').append('<blockquote>' + data.msg + '<cite>' + data.user + ' @ ' + moment.unix(parseInt(data.timestamp)).format('MMM Do, HH:mm:ss') + '</cite></blockquote>');
+        // $('#content').append('<blockquote>' + data.msg + '<cite>' + data.user + ' @ ' + moment.unix(parseInt(data.timestamp)).format('MMM Do, HH:mm:ss') + '</cite></blockquote>');
+        $('#content').append('<blockquote>' + data.msg + '<cite>' + moment.unix(parseInt(data.timestamp)).fromNow() + ' by ' + data.user + '</cite></blockquote>');
       } catch (e) {
         console.log(e);
       }
