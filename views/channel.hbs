@@ -48,10 +48,17 @@ $(function() {
   var lastSent;
 
   var send = function () {
+    if ($('#message').val().split(' ')[0] == "/name") {
+       setName($('#message').val().split(' ')[1]);
+       $('#message').val("");
+       $('#message').attr("placeholder", localStorage.getItem('name') + " says...");
+       return;
+    }
+
     if ($('#message').val() != "") {
       lastSent = $('#message').val();
 
-      $.post('/p/{{channel}}', {user: localStorage.getItem('name'), msg: $('#message').val(), timestamp: Math.round(new Date().getTime()/1000.0) }, function(res) {
+      $.post('/p/{{channel}}', { user: localStorage.getItem('name'), msg: $('#message').val(), timestamp: Math.round(new Date().getTime()/1000.0) }, function(res) {
         // console.log(res);
       });
 
@@ -70,31 +77,17 @@ $(function() {
 
 
   // Name
-  var setName = function () {
-    $('#namePrompt').hide();
-    $('#message').show();
-    $.globalMessenger().post("Name changed to " + $('#name').val());
-    console.log("name set to " + $('#name').val());
-    localStorage.setItem('name', $('#name').val());
+  var setName = function (name) {
+    $.globalMessenger().post("Name changed to " + name);
+    console.log("name set to " + name);
+    localStorage.setItem('name', name);
   }
 
-  $('#name').keyup(function (e) {
-    e.preventDefault();
-    if (e.which == 13) {
-      setName();
-    }
-  });
-
-  $('#namePrompt').hide();
-  $('#message').hide();
-
-  if (localStorage.getItem('name')) {
-    $('#name').val(localStorage.getItem('name'));
-    $('#message').show();
-    $('#message').attr("placeholder", localStorage.getItem('name') + " says...");
-  } else {
-    $('#namePrompt').show();
+  if (!localStorage.getItem('name')) {
+    localStorage.setItem('name', 'Anonymous');
   }
+
+  $('#message').attr("placeholder", localStorage.getItem('name') + " says...");
 });
 
 
@@ -109,16 +102,6 @@ $(function() {
 
 <section class="row">
   <div class="large-6 columns">
-    <div id="namePrompt">
-      <div class="row collapse">
-        <div class="small-10 columns">
-          <input id="name" type="text" placeholder="my name is">
-        </div>
-        <div class="small-2 columns">
-          <a href="#" class="button prefix success">Set</a>
-        </div>
-      </div>
-    </div>
     <div class="row collapse">
       <div class="small-12 columns">
         <input id="message" type="text" placeholder="say something nice" autofocus>
