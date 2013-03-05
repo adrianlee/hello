@@ -48,17 +48,24 @@ $(function() {
   var lastSent;
 
   var send = function () {
+    lastSent = $('#message').val();
+
     if ($('#message').val().split(' ')[0] == "/name") {
-       setName($('#message').val().split(' ')[1]);
-       $('#message').val("");
-       $('#message').attr("placeholder", localStorage.getItem('name') + " says...");
-       return;
+      if (!$('#message').val().split(' ')[1]) {
+        $.globalMessenger().post({
+          message: 'Don\'t be silly, everyone has a name!',
+          type: 'error'
+        });
+        return;
+      }
+      setName($('#message').val().split(' ')[1]);
+      $('#message').val("");
+      $('#message').attr("placeholder", localStorage.getItem('name') + " says...");
+      return;
     }
 
     if ($('#message').val() != "") {
-      lastSent = $('#message').val();
-
-      $.post('/p/{{channel}}', { user: localStorage.getItem('name'), msg: $('#message').val(), timestamp: Math.round(new Date().getTime()/1000.0) }, function(res) {
+      $.post('/p/{{channel}}', { user: localStorage.getItem('name'), msg: $('#message').val().replace(/(<([^>]+)>)/ig,""), timestamp: Math.round(new Date().getTime()/1000.0) }, function(res) {
         // console.log(res);
       });
 
@@ -78,9 +85,10 @@ $(function() {
 
   // Name
   var setName = function (name) {
-    $.globalMessenger().post("Name changed to " + name);
-    console.log("name set to " + name);
-    localStorage.setItem('name', name);
+    this.name = name.replace(/(<([^>]+)>)/ig,"");
+    $.globalMessenger().post("Name changed to " + this.name);
+    console.log("name set to " + this.name);
+    localStorage.setItem('name', this.name);
   }
 
   if (!localStorage.getItem('name')) {
