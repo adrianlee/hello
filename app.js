@@ -3,10 +3,7 @@ var express = require('express'),
     app = express();
 
 var redis = require('redis'),
-    pubClient = redis.createClient(11950, 'pub-redis-11950.us-east-1-2.2.ec2.garantiadata.com');
-
-
-pubClient.auth('123123123');
+    pubClient = redis.createClient();
 
 ////////////////////////////////////////////////
 // Express Configuration
@@ -72,8 +69,7 @@ app.get('/s/:channel', function (req, res) {
   req.socket.setTimeout(Infinity);
 
   var messageCount = 0;
-  var subscriber = redis.createClient(11950, 'pub-redis-11950.us-east-1-2.2.ec2.garantiadata.com');
-  subscriber.auth('123123123');
+  var subscriber = redis.createClient();
 
   subscriber.subscribe(req.param('channel'));
 
