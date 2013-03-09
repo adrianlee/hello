@@ -1,9 +1,9 @@
 var express = require('express'),
-    hbs = require('hbs'),
-    app = express();
+  hbs = require('hbs'),
+  app = express();
 
 var redis = require('redis'),
-    pubClient = redis.createClient();
+  pubClient = redis.createClient();
 
 ////////////////////////////////////////////////
 // Express Configuration
@@ -16,11 +16,16 @@ app.configure(function() {
   app.use(express.bodyParser());
   app.use(express.methodOverride());
   app.use(app.router);
-  app.use(express.static(__dirname + '/public'), { maxAge: 300000 });
+  app.use(express.static(__dirname + '/public'), {
+    maxAge: 300000
+  });
 });
 
-app.configure('development', function(){
-  app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
+app.configure('development', function() {
+  app.use(express.errorHandler({
+    dumpExceptions: true,
+    showStack: true
+  }));
 });
 
 ////////////////////////////////////////////////
@@ -29,20 +34,20 @@ app.configure('development', function(){
 var blocks = {};
 
 hbs.registerHelper('extend', function(name, context) {
-    var block = blocks[name];
-    if (!block) {
-        block = blocks[name] = [];
-    }
+  var block = blocks[name];
+  if (!block) {
+    block = blocks[name] = [];
+  }
 
-    block.push(context(this));
+  block.push(context(this));
 });
 
 hbs.registerHelper('block', function(name) {
-    var val = (blocks[name] || []).join('\n');
+  var val = (blocks[name] || []).join('\n');
 
-    // clear the block
-    blocks[name] = [];
-    return val;
+  // clear the block
+  blocks[name] = [];
+  return val;
 });
 
 ////////////////////////////////////////////////
@@ -52,20 +57,20 @@ app.get('/', function(req, res) {
   res.render('index');
 });
 
-app.get('/health', function (req, res) {
-  pubClient.info(function (err, reply) {
+app.get('/health', function(req, res) {
+  pubClient.info(function(err, reply) {
     res.send(reply);
   });
 });
 
-app.get('/o/:channel', function (req, res) {
-  pubClient.lrange(req.param('channel'), 0, -1, function (err, reply) {
+app.get('/o/:channel', function(req, res) {
+  pubClient.lrange(req.param('channel'), 0, -1, function(err, reply) {
     console.log(reply);
     res.json(reply);
   });
 });
 
-app.get('/s/:channel', function (req, res) {
+app.get('/s/:channel', function(req, res) {
   req.socket.setTimeout(Infinity);
 
   var messageCount = 0;
@@ -111,11 +116,13 @@ app.post('/p/:channel', function(req, res) {
   console.log(req.body);
 
   pubClient.publish(req.param('channel'), JSON.stringify(req.body));
-  res.writeHead(200, {'Content-Type': 'text/html'});
+  res.writeHead(200, {
+    'Content-Type': 'text/html'
+  });
   res.end();
 });
 
-app.get('/:channel', function (req, res) {
+app.get('/:channel', function(req, res) {
   res.locals.channel = req.param('channel');
   res.render('channel');
 });
@@ -123,6 +130,6 @@ app.get('/:channel', function (req, res) {
 ////////////////////////////////////////////////
 // Express Server
 ////////////////////////////////////////////////
-app.listen(app.get('port'), function(){
+app.listen(app.get('port'), function() {
   console.log("Express server listening on port " + app.get('port'));
 });
